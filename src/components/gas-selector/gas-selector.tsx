@@ -39,10 +39,10 @@ const useStyles = makeStyles({
   },
 });
 
-const GasSelector: FC<InputProps> = ( { headline, o2, he, useSetpoint, setpoint, onGasChange, ... rest }) => {
+const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, onGasChange, ...rest }) => {
 
   const classes = useStyles();
-  
+
   const handleO2SliderChange = (event: any, newValue: any) => {
     handleGasChange(Gas.O2, newValue);
   };
@@ -56,110 +56,117 @@ const GasSelector: FC<InputProps> = ( { headline, o2, he, useSetpoint, setpoint,
   };
 
   const handleGasChange = (gas: Gas, value: number): void => {
-    switch(gas) {
+    switch (gas) {
       case Gas.O2: onGasChange(value, he, useSetpoint, setpoint); break;
       case Gas.He: onGasChange(o2, value, useSetpoint, setpoint); break;
     }
-    
+
   }
 
   const handleBlur = (gas: Gas, ev: any) => {
     const value = ev.target.value;
-    
+
     if (value < 0) {
       handleGasChange(gas, 0);
     } else if (value > 100) {
       handleGasChange(gas, 100);
     }
-    
+
   };
 
   const toggleSetpoint = () => {
     onGasChange(o2, he, !useSetpoint, setpoint);
   }
- 
+
   return (
     <div className="App">
 
-        <Card>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              { headline }
-            </Typography>
+      <Card>
+        <CardContent>
+          <Typography variant="h5" component="h2">
+            {headline}
+          </Typography>
 
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                O2:
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              O2:
               </Grid>
-              <Grid item xs>
-                <Slider
-                  value={typeof o2 === 'number' ? o2 : 0}
-                  onChange={handleO2SliderChange}
-                  aria-labelledby="input-slider"
-                />
-              </Grid>
-              <Grid item>
-                <Input
-                  className={classes.input}
-                  value={o2}
-                  margin="dense"
-                  onChange={(ev) => handleGasInputChange(Gas.O2, ev)}
-                  onBlur={(ev) => handleBlur(Gas.O2, ev)}
-                  inputProps={{
-                    min: 0,
-                    max: 100,
-                    type: 'number'
-                  }}
-                />
-              </Grid>
+            <Grid item xs>
+              <Slider
+                value={typeof o2 === 'number' ? o2 : 0}
+                onChange={handleO2SliderChange}
+                aria-labelledby="input-slider"
+              />
             </Grid>
-
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                HE
+            <Grid item>
+              <Input
+                className={classes.input}
+                value={o2}
+                margin="dense"
+                onChange={(ev) => handleGasInputChange(Gas.O2, ev)}
+                onBlur={(ev) => handleBlur(Gas.O2, ev)}
+                inputProps={{
+                  min: 0,
+                  max: 100,
+                  type: 'number'
+                }}
+              />
             </Grid>
-              <Grid item xs>
-                <Slider
-                  value={he}
-                  onChange={handleHeSliderChange}
-                  aria-labelledby="input-slider"
-                />
-              </Grid>
-              <Grid item>
-                <Input
-                  className={classes.input}
-                  value={he}
-                  margin="dense"
-                  onChange={(event) => handleGasInputChange(Gas.He, event)}
-                  onBlur={(event) => handleBlur(Gas.He, event)}
-                  inputProps={{
-                    min: 0,
-                    max: 100,
-                    type: 'number'
-                  }}
-                />
-              </Grid>
+          </Grid>
+
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              HE
             </Grid>
+            <Grid item xs>
+              <Slider
+                value={he}
+                onChange={handleHeSliderChange}
+                aria-labelledby="input-slider"
+              />
+            </Grid>
+            <Grid item>
+              <Input
+                className={classes.input}
+                value={he}
+                margin="dense"
+                onChange={(event) => handleGasInputChange(Gas.He, event)}
+                onBlur={(event) => handleBlur(Gas.He, event)}
+                inputProps={{
+                  min: 0,
+                  max: 100,
+                  type: 'number'
+                }}
+              />
+            </Grid>
+          </Grid>
 
-            N2: { 100 - o2 - he > 0 ? 100 - o2 - he : 0 } <br></br>
+            N2: {100 - o2 - he > 0 ? 100 - o2 - he : 0} <br></br>
 
-            <FormControlLabel
-        control={
-          <Switch
-            checked={useSetpoint}
-            onChange={toggleSetpoint}
-            name="checkedB"
-            color="primary"
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useSetpoint}
+                onChange={toggleSetpoint}
+                name="checkedB"
+                color="primary"
+              />
+            }
+            label={'Use Setpoint: ' + setpoint}
           />
-        }
-        label={'Use Setpoint: ' + setpoint }
-      />
 
-          </CardContent>
-        </Card>
+        { o2 + he > 100 
+          ?
+            <div style={{color: "red"}}><strong>INVALID GAS</strong></div>
+          : null
+        
+        }
+
+        </CardContent>
+      </Card>
 
     </div>
-    
+
   );
 }
 
