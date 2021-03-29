@@ -1,9 +1,8 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, StylesProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import GasSelector from './components/gas-selector/gas-selector';
-
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,7 +11,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { getDefaultCompilerOptions } from 'typescript';
+
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   root: {
@@ -51,7 +53,7 @@ function App() {
       setSetpointTo(setpoint)
     }
   }
- 
+
   function ppO2From(pressure: number, ignoreSetpoint = false): number {
     return useSetpointFrom && !ignoreSetpoint
       ? setpointFrom
@@ -91,7 +93,7 @@ function App() {
       ? getToGasFactor(pressure, setpointTo)
       : 1;
 
-     // console.log('ppHeTo', factor)
+    // console.log('ppHeTo', factor)
     return roundWithTwoDecimals((valueToHe / 100 * pressure) * factor);
 
   }
@@ -102,7 +104,6 @@ function App() {
   function getToGasFactor(pressure: number, setpoint: number): number {
     return (pressure - setpoint) / (ppN2To(pressure, true) + ppHeTo(pressure, true))
   }
-
 
   function diffPpO2(pressure: number) {
     return roundWithTwoDecimals(ppO2From(pressure) - ppO2To(pressure));
@@ -126,21 +127,34 @@ function App() {
       : 'green';
   }
 
-  const rows = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(depth => ({
-    depth: (depth - 1) * 10,
-    ppO2From: ppO2From(depth),
-    ppO2To: ppO2To(depth),
-    diffO2: diffPpO2(depth),
+  const rows = [1.6, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(depth => {
 
-    diffN2: diffPpN2(depth),
-    ppN2From: ppN2From(depth),
-    ppN2To: ppN2To(depth),
+    const n2Incr = Math.round(((100 - ppO2To(depth) / depth * 100) - (ppHeTo(depth) / depth * 100)) - ((100 - ppO2From(depth) / depth * 100) - (ppHeFrom(depth) / depth * 100)))
 
-    diffHe: diffPpHe(depth),
-    ppHeFrom: ppHeFrom(depth),
-    ppHeTo: ppHeTo(depth),
+    return {
 
-  }));
+      depth: Math.round((depth - 1) * 10),
+      ppO2From: ppO2From(depth),
+      ppO2To: ppO2To(depth),
+      diffO2: diffPpO2(depth),
+
+      diffN2: diffPpN2(depth),
+      ppN2From: ppN2From(depth),
+      ppN2To: ppN2To(depth),
+
+
+      diffHe: diffPpHe(depth),
+      ppHeFrom: ppHeFrom(depth),
+      ppHeTo: ppHeTo(depth),
+
+      resultingGasFrom: Math.round(ppO2From(depth) / depth * 100) + '/' + Math.round(ppHeFrom(depth) / depth * 100),
+      resultingGasTo: Math.round(ppO2To(depth) / depth * 100) + '/' + Math.round(ppHeTo(depth) / depth * 100),
+
+      N2Incr: n2Incr,
+      HeDrop: Math.round(ppHeFrom(depth) / depth * 100) - Math.round(ppHeTo(depth) / depth * 100),
+      HeDropMax: n2Incr * 5
+    }
+  });
 
 
   return (
@@ -149,7 +163,7 @@ function App() {
         <Container maxWidth="md">
           <h1>TecDiveTools</h1>
 
-          Gas Switch Calculator: Calcules the partial pressure differences between two gases for different ambient pressures
+          Gas Switch Calculator: Calculate the partial pressure differences between two gases for different ambient pressures
           <br></br>
           <br></br>
         </Container>
@@ -180,14 +194,18 @@ function App() {
         <br></br>
 
         <TableContainer component={Paper}>
-          <Table aria-label="simple table">
+          <Table
+            style={{ minWidth: 500 }}
+            size="small"
+            aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Depth: [m]</TableCell>
+                <TableCell>Depth<br></br> [m]</TableCell>
                 <TableCell align="right">ppO2</TableCell>
                 <TableCell align="right">ppN2</TableCell>
                 <TableCell align="right">ppHe</TableCell>
-
+                <TableCell align="right">Gas</TableCell>
+                <TableCell align="left">IANTD 5% rule</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -201,6 +219,19 @@ function App() {
                   <TableCell align="right" style={{ color: getColor(row.diffN2.toFixed(2)) }}>from: {row.ppN2From.toFixed(2)} <br></br>to: {row.ppN2To.toFixed(2)} <br></br><b>diff: {Math.abs(row.diffN2).toFixed(2)}</b></TableCell>
 
                   <TableCell align="right" style={{ color: getColor(row.diffHe.toFixed(2)) }}>from: {row.ppHeFrom.toFixed(2)} <br></br>to: {row.ppHeTo.toFixed(2)} <br></br><b>diff: {Math.abs(row.diffHe).toFixed(2)}</b></TableCell>
+
+                  <TableCell align="right">
+                    from: {row.resultingGasFrom}<br></br>
+                    to: {row.resultingGasTo}<br></br>
+                  </TableCell>
+
+                  <TableCell align="left"
+                    style={{ color: row.HeDrop < row.HeDropMax ? 'green' : 'red' }}>
+                    {row.N2Incr}% N2 increase<br></br>
+                    {row.HeDropMax}% max He drop: <br></br>
+                    {row.HeDrop}% He drop:
+                  </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
@@ -214,18 +245,33 @@ function App() {
             Red: Partial pressure difference is above 1.0 <br></br>
         <br></br>
 
+        <Card>
+          <CardContent>
+            <Typography variant="h5" component="h2">
+              IANTD 5% rule
+          </Typography>
+            <cite>
+              The 5:1 ratio indicates that a diver should not switch to a gas that has a helium drop of
+              5% (actual percent by volume) for every 1%(actual percent by volume) increase in nitrogen content.
+          </cite> <br></br>
+          [Tom Mount, Joseph Dituri:  Exploration and Mixed Gas Diving Encyclopedia (The Tao of Survival Underwater)]
+          </CardContent>
+        </Card>
+
+        <br></br>
+
       </Container>
       <Container maxWidth="md">
         <footer>
 
           <p>
-            This calculation might be incorrect and / or contains bugs.
+            This calculation might be incorrect and / or contain bugs.
             Do not rely on this tool for your dive planning.
             Do your own calculations.
           </p>
 
           <p>
-            You are most welcome to check the <a href="https://github.com/readme42/tecdivetool">source code on GitHub</a> and report bugs if you find some. 
+            You are most welcome to check the <a href="https://github.com/readme42/tecdivetool">source code on GitHub</a> and report bugs if you find some.
           </p>
 
         </footer>

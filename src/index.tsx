@@ -3,10 +3,27 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiTableCell: {
+      root: {
+        fontSize: 13
+      },
+
+      sizeSmall: {
+        padding: '4px 8px 4px 6px'
+      }
+    }
+  }
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <MuiThemeProvider theme={theme}>
+        <App></App>
+    </MuiThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
