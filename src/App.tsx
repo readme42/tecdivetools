@@ -121,6 +121,7 @@ function App() {
   const rows = [1.6, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(depth => {
 
     const n2Incr = Math.round(((100 - ppO2To(depth) / depth * 100) - (ppHeTo(depth) / depth * 100)) - ((100 - ppO2From(depth) / depth * 100) - (ppHeFrom(depth) / depth * 100)))
+    const heDrop = Math.round(ppHeFrom(depth) / depth * 100) - Math.round(ppHeTo(depth) / depth * 100);
 
     return {
 
@@ -142,8 +143,8 @@ function App() {
       resultingGasTo: Math.round(ppO2To(depth) / depth * 100) + '/' + Math.round(ppHeTo(depth) / depth * 100),
 
       N2Incr: n2Incr,
-      HeDrop: Math.round(ppHeFrom(depth) / depth * 100) - Math.round(ppHeTo(depth) / depth * 100),
-      HeDropMax: n2Incr * 5
+      HeDrop: heDrop,
+      N2IncrMax:  heDrop / 5
     }
   });
 
@@ -217,10 +218,11 @@ function App() {
                   </TableCell>
 
                   <TableCell align="left"
-                    style={{ color: row.HeDrop < row.HeDropMax ? 'green' : 'red' }}>
+                    style={{ color: row.N2Incr < row.N2IncrMax ? 'green' : 'red' }}>
                     {row.N2Incr}% N2 increase<br></br>
-                    {row.HeDropMax}% max He drop: <br></br>
-                    {row.HeDrop}% He drop:
+                    {row.HeDrop}% He drop<br></br>
+                    {row.N2IncrMax}% N2 incr max <br></br>
+
                   </TableCell>
 
                 </TableRow>
@@ -239,13 +241,17 @@ function App() {
         <Card>
           <CardContent>
             <Typography variant="h5" component="h2">
-              IANTD 5% rule
+              IANTD 5% rule aka IANTD rule of fifth
           </Typography>
             <cite>
               The 5:1 ratio indicates that a diver should not switch to a gas that has a helium drop of
               5% (actual percent by volume) for every 1%(actual percent by volume) increase in nitrogen content.
-          </cite> <br></br>
+            </cite> <br></br>
           [Tom Mount, Joseph Dituri:  Exploration and Mixed Gas Diving Encyclopedia (The Tao of Survival Underwater)]
+
+            <br></br>
+            <br></br>
+            <strong>This can be rephrased into: "Limit your rise in N2 to one fifth of the drop in Helium as you ascend."</strong>
           </CardContent>
         </Card>
 
@@ -256,8 +262,8 @@ function App() {
         <footer>
 
           <p>
-            This calculation might be incorrect and / or contain bugs.
-            Do not rely on this tool for your dive planning.
+            This calculation might be incorrect and / or contain bugs. Taking this calculations for real might kill you. <br></br>
+            Do not rely on this tool for your dive planning. <br></br>
             Do your own calculations.
           </p>
 
