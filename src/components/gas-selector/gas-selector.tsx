@@ -1,16 +1,15 @@
 import React, { FC, InputHTMLAttributes } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@mui/styles';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 
-import Grid from '@material-ui/core/Grid';
-import Slider from '@material-ui/core/Slider';
-import Input from '@material-ui/core/Input';
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
+import Input from '@mui/material/Input';
 
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 enum Gas {
   O2,
@@ -27,7 +26,7 @@ interface InputProps extends InputHTMLAttributes<number> {
   onGasChange: (o2: number, he: number, useSetpoint: boolean, setpoint?: number) => void
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(() => ({
   title: {
     fontSize: 14,
   },
@@ -37,7 +36,7 @@ const useStyles = makeStyles({
   input: {
     width: 42,
   },
-});
+}));
 
 const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, onGasChange, ...rest }) => {
 

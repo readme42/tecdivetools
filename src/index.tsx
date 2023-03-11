@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles";
+import { createTheme, adaptV4Theme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 
-const theme = createMuiTheme({
+const theme = createTheme(adaptV4Theme({
   overrides: {
     MuiTableCell: {
       root: {
@@ -17,13 +18,13 @@ const theme = createMuiTheme({
       }
     }
   }
-});
+}));
 
 ReactDOM.render(
   <React.StrictMode>
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <App></App>
-    </MuiThemeProvider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
