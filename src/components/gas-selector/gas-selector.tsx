@@ -1,5 +1,5 @@
 import React, { FC, InputHTMLAttributes } from 'react';
-import { makeStyles } from '@mui/styles';
+import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -26,21 +26,26 @@ interface InputProps extends InputHTMLAttributes<number> {
   onGasChange: (o2: number, he: number, useSetpoint: boolean, setpoint?: number) => void
 }
 
-const useStyles = makeStyles(() => ({
-  title: {
-    fontSize: 14,
+const PREFIX = 'GasSelector';
+const classes = {
+  root: `${PREFIX}-root`,
+  input: `${PREFIX}-input`
+}
+
+const Root = styled('div')(({ theme }) => ({
+  [`&.${classes.root}`]: {
+    title: {
+      fontSize: 24,
+    },
   },
-  pos: {
-    marginBottom: 12,
-  },
-  input: {
-    width: 42,
-  },
+  [`&.${classes.input}`]: {
+    input: {
+      width: 402,
+    },
+  }
 }));
 
 const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, onGasChange, ...rest }) => {
-
-  const classes = useStyles();
 
   const handleO2SliderChange = (event: any, newValue: any) => {
     handleGasChange(Gas.O2, newValue);
@@ -59,7 +64,6 @@ const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, 
       case Gas.O2: onGasChange(value, he, useSetpoint, setpoint); break;
       case Gas.He: onGasChange(o2, value, useSetpoint, setpoint); break;
     }
-
   }
 
   const handleBlur = (gas: Gas, ev: any) => {
@@ -78,7 +82,7 @@ const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, 
   }
 
   return (
-    <div className="App">
+    <Root className={classes.root}>
 
       <Card>
         <CardContent>
@@ -158,13 +162,12 @@ const GasSelector: FC<InputProps> = ({ headline, o2, he, useSetpoint, setpoint, 
           ?
             <div style={{color: "red"}}><strong>INVALID GAS</strong></div>
           : null
-        
         }
 
         </CardContent>
       </Card>
 
-    </div>
+    </Root>
 
   );
 }

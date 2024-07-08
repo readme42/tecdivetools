@@ -27,6 +27,10 @@ function App() {
   const [setpointTo, setSetpointTo] = React.useState(1.3);
   const [useSetpointTo, setUseSetpointTo] = React.useState(false);
 
+  const DENSITY_O2 = 1.428;
+  const DENSITY_HE = 0.179;
+  const DENSITY_N2 = 1.251;
+
   function handleFromGasChange(o2: number, he: number, useSetpoint: boolean, setpoint?: number): void {
     setValueFromO2(o2);
     setValueFromHe(he);
@@ -123,6 +127,14 @@ function App() {
     const n2Incr = Math.round(((100 - ppO2To(depth) / depth * 100) - (ppHeTo(depth) / depth * 100)) - ((100 - ppO2From(depth) / depth * 100) - (ppHeFrom(depth) / depth * 100)))
     const heDrop = Math.round(ppHeFrom(depth) / depth * 100) - Math.round(ppHeTo(depth) / depth * 100);
 
+    const o2From = ppO2From(depth) / depth * 100;
+    const heFrom = ppHeFrom(depth) / depth * 100;
+    const n2From = 100 - o2From - heFrom;
+
+    const o2To = ppO2To(depth) / depth * 100
+    const heTo = ppHeTo(depth) / depth * 100
+    const n2To = 100 - o2To - heTo;
+
     return {
 
       depth: Math.round((depth - 1) * 10),
@@ -139,8 +151,20 @@ function App() {
       ppHeFrom: ppHeFrom(depth),
       ppHeTo: ppHeTo(depth),
 
-      resultingGasFrom: Math.round(ppO2From(depth) / depth * 100) + '/' + Math.round(ppHeFrom(depth) / depth * 100),
-      resultingGasTo: Math.round(ppO2To(depth) / depth * 100) + '/' + Math.round(ppHeTo(depth) / depth * 100),
+      resultingGasFrom: Math.round(o2From) + '/' + Math.round(heFrom),
+      resultingGasTo: Math.round(o2To) + '/' + Math.round(heTo),
+
+      resultingGasFromDensity: roundWithTwoDecimals(
+       DENSITY_O2 * ppO2From(depth) +
+          DENSITY_HE * ppHeFrom(depth) +
+          DENSITY_N2 * ppN2From(depth)
+      ),
+
+      resultingGasToDensity: roundWithTwoDecimals(
+          DENSITY_O2 * ppO2To(depth) +
+          DENSITY_HE * ppHeTo(depth) +
+          DENSITY_N2 * ppN2To(depth)
+      ),
 
       N2Incr: n2Incr,
       HeDrop: heDrop,
@@ -150,7 +174,7 @@ function App() {
 
 
   return (
-    <div className="App">
+    <div>
       <header className="App-header">
         <Container maxWidth="md">
           <h1>TecDiveTools</h1>
@@ -193,33 +217,72 @@ function App() {
             <TableHead>
               <TableRow>
                 <TableCell>Depth<br></br> [m]</TableCell>
-                <TableCell align="right">ppO2</TableCell>
-                <TableCell align="right">ppN2</TableCell>
-                <TableCell align="right">ppHe</TableCell>
-                <TableCell align="right">Gas</TableCell>
+                <TableCell align="right"></TableCell>
+                <TableCell align="right">ppO2<br></br> [bar]</TableCell>
+                <TableCell align="right">ppN2<br></br> [bar]</TableCell>
+                <TableCell align="right">ppHe<br></br> [bar]</TableCell>
+                <TableCell align="right">O2/He</TableCell>
+                <TableCell align="right">Density</TableCell>
                 <TableCell align="left">IANTD 5% rule</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.depth}>
+
+                  { /* Depth */ }
                   <TableCell component="th" scope="row">
                     {row.depth}
                   </TableCell>
-                  <TableCell align="right" >from: {row.ppO2From.toFixed(2)} <br></br>to: {row.ppO2To.toFixed(2)} <br></br><b>diff: {Math.abs(row.diffO2).toFixed(2)}</b></TableCell>
 
-                  <TableCell align="right" style={{ color: getColor(row.diffN2.toFixed(2)) }}>from: {row.ppN2From.toFixed(2)} <br></br>to: {row.ppN2To.toFixed(2)} <br></br><b>diff: {Math.abs(row.diffN2).toFixed(2)}</b></TableCell>
-
-                  <TableCell align="right" style={{ color: getColor(row.diffHe.toFixed(2)) }}>from: {row.ppHeFrom.toFixed(2)} <br></br>to: {row.ppHeTo.toFixed(2)} <br></br><b>diff: {Math.abs(row.diffHe).toFixed(2)}</b></TableCell>
-
-                  <TableCell align="right">
-                    from: {row.resultingGasFrom}<br></br>
-                    to: {row.resultingGasTo}<br></br>
+                  <TableCell component="th" scope="row">
+                    from<br></br>
+                    to<br></br>
+                    diff
                   </TableCell>
 
+                  { /* ppO2 */ }
+                  <TableCell align="right" >
+                    {row.ppO2From.toFixed(2)} <br></br>
+                    {row.ppO2To.toFixed(2)} <br></br>
+                    <b>{Math.abs(row.diffO2).toFixed(2)}</b>
+                  </TableCell>
+
+                  { /* ppN2 */ }
+                  <TableCell align="right" style={{ color: getColor(row.diffN2.toFixed(2)) }}>
+                    {row.ppN2From.toFixed(2)} <br></br>
+                    {row.ppN2To.toFixed(2)} <br></br><b>
+                    {Math.abs(row.diffN2).toFixed(2)}</b>
+                  </TableCell>
+
+                  { /* ppHe */ }
+                  <TableCell align="right" style={{ color: getColor(row.diffHe.toFixed(2)) }}>
+                    {row.ppHeFrom.toFixed(2)} <br></br>
+                    {row.ppHeTo.toFixed(2)} <br></br>
+                    <b>{Math.abs(row.diffHe).toFixed(2)}</b>
+                  </TableCell>
+
+                  { /* Gas */ }
+                  <TableCell align="right">
+                    {row.resultingGasFrom}<br></br>
+                    {row.resultingGasTo}<br></br>&nbsp;
+                  </TableCell>
+
+                  { /* Density */ }
+                  <TableCell align="right">
+                    <span style={{ color: row.resultingGasFromDensity > 6 ? 'red' : '' }}>
+                      {row.resultingGasFromDensity}
+                    </span><br></br>
+
+                    <span style={{ color: row.resultingGasToDensity > 6 ? 'red' : '' }}>
+                      {row.resultingGasToDensity}
+                    </span><br></br>&nbsp;
+                  </TableCell>
+
+                  { /* IANTD 5% */}
                   <TableCell align="left"
-                    style={{ color: row.N2Incr < row.N2IncrMax ? 'green' : 'red' }}>
-                    {row.N2Incr}% N2 increase<br></br>
+                             style={{ color: row.N2Incr < row.N2IncrMax ? 'green' : 'red' }}>
+                    {row.N2Incr}% N2 incrc<br></br>
                     {row.HeDrop}% He drop<br></br>
                     {row.N2IncrMax}% N2 incr max <br></br>
 
@@ -273,7 +336,6 @@ function App() {
 
         </footer>
       </Container>
-
 
     </div>
   );
