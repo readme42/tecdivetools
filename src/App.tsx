@@ -146,7 +146,6 @@ function App() {
       ppN2From: ppN2From(depth),
       ppN2To: ppN2To(depth),
 
-
       diffHe: diffPpHe(depth),
       ppHeFrom: ppHeFrom(depth),
       ppHeTo: ppHeTo(depth),
@@ -218,9 +217,9 @@ function App() {
               <TableRow>
                 <TableCell>Depth<br></br> [m]</TableCell>
                 <TableCell align="right"></TableCell>
-                <TableCell align="right">ppO2<br></br> [bar]</TableCell>
-                <TableCell align="right">ppN2<br></br> [bar]</TableCell>
-                <TableCell align="right">ppHe<br></br> [bar]</TableCell>
+                <TableCell align="right">ppO2<br></br>[bar]</TableCell>
+                <TableCell align="right">ppN2<br></br>[bar]</TableCell>
+                <TableCell align="right">ppHe<br></br>[bar]</TableCell>
                 <TableCell align="right">O2/He</TableCell>
                 <TableCell align="right">Density</TableCell>
                 <TableCell align="left">IANTD 5% rule</TableCell>
@@ -243,22 +242,22 @@ function App() {
 
                   { /* ppO2 */ }
                   <TableCell align="right" >
-                    {row.ppO2From.toFixed(2)} <br></br>
-                    {row.ppO2To.toFixed(2)} <br></br>
+                    {row.ppO2From.toFixed(2)}<br></br>
+                    {row.ppO2To.toFixed(2)}<br></br>
                     <b>{Math.abs(row.diffO2).toFixed(2)}</b>
                   </TableCell>
 
                   { /* ppN2 */ }
                   <TableCell align="right" style={{ color: getColor(row.diffN2.toFixed(2)) }}>
-                    {row.ppN2From.toFixed(2)} <br></br>
-                    {row.ppN2To.toFixed(2)} <br></br><b>
+                    {row.ppN2From.toFixed(2)}<br></br>
+                    {row.ppN2To.toFixed(2)}<br></br><b>
                     {Math.abs(row.diffN2).toFixed(2)}</b>
                   </TableCell>
 
                   { /* ppHe */ }
                   <TableCell align="right" style={{ color: getColor(row.diffHe.toFixed(2)) }}>
-                    {row.ppHeFrom.toFixed(2)} <br></br>
-                    {row.ppHeTo.toFixed(2)} <br></br>
+                    {row.ppHeFrom.toFixed(2)}<br></br>
+                    {row.ppHeTo.toFixed(2)}<br></br>
                     <b>{Math.abs(row.diffHe).toFixed(2)}</b>
                   </TableCell>
 
@@ -282,10 +281,9 @@ function App() {
                   { /* IANTD 5% */}
                   <TableCell align="left"
                              style={{ color: row.N2Incr < row.N2IncrMax ? 'green' : 'red' }}>
-                    {row.N2Incr}% N2 incrc<br></br>
-                    {row.HeDrop}% He drop<br></br>
-                    {row.N2IncrMax}% N2 incr max <br></br>
-
+                    {row.N2Incr}%&nbsp;N2&nbsp;incr<br></br>
+                    {row.HeDrop}%&nbsp;He&nbsp;drop<br></br>
+                    {row.N2IncrMax}%&nbsp;N2&nbsp;incr&nbsp;max<br></br>
                   </TableCell>
 
                 </TableRow>
