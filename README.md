@@ -1,3 +1,5 @@
+**NOTE**: _This project has been archived. Further development is taking place behind closed doors._
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
